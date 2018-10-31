@@ -80,13 +80,12 @@ keyframe=$((video_duration-2*fade_duration))
 # so the entire video is crossfaded
 if [[ keyframe -lt 0 ]]; then
   fade_duration=$((video_duration/2))
-  keyframe=0
 fi
 
-ffmpeg -loglevel panic -i "$infile" -filter_complex "
-  [0]split[body][pre];
-  [pre]trim=duration=${fade_duration},format=yuva420p,
-    fade=d=${fade_duration}:alpha=1,setpts=PTS+(${keyframe}/TB)[jt];
-  [body]trim=${fade_duration},setpts=PTS-STARTPTS[main];
-  [main][jt]overlay" \
+ffmpeg -i "$infile" -filter_complex "
+  [0]split[v1][v2];
+  [v2]trim=duration=${fade_duration},fade=d=${fade_duration}:alpha=1,
+    setpts='PTS+(max(${video_duration}-2*${fade_duration},0)/TB)'[faded];
+  [v1]trim=${fade_duration},setpts=PTS-STARTPTS[main];
+  [main][faded]overlay" \
   -vcodec libx264 -an -preset veryslow -movflags faststart "$outfile"
