@@ -5,11 +5,11 @@ PROGNAME=$(basename "$0")
 VERSION='1.0.0'
 
 ##
-# Check for a dependancy
+# Check for a dependency
 #
 # @param 1 Command to check
 ##
-dependancy() {
+dependency() {
   hash "$1" &>/dev/null || error "$1 must be installed"
 }
 
@@ -34,9 +34,9 @@ exit $1
 
 ################################################################################
 
-# Check dependacies
-dependancy ffmpeg
-dependancy ffprobe
+# Check dependencies
+dependency ffmpeg
+dependency ffprobe
 
 # Initialize variables
 fade_duration=1
